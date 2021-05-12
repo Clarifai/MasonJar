@@ -1,11 +1,20 @@
+import os
+import pickle
 from typing import *
+
+__all__ = ['JarBase']
 
 class JarBase:
 
-    def __init__(self, base_image: str, **kwargs):
+    def __init__(self, base_image: str, root: str='.', **kwargs):
         self.base_image = base_image
         self.dockerfile_lines = [f'FROM {self.base_image}'] 
         self.setup_image(**kwargs)
+        container_name = self.__class__.__name__
+        self.path = os.path.join(root, f'{container_name}')
+        os.makedir(self.path)
+        self.COPY(self.path, f'~/{container_name}/')
+        self.CMD(f'python3 -c "import pickle; jar = pickle.load({os.path.join(self.path, jar.pkl)}); jar.entrypoint()"')
 
     def setup_image(self, **kwargs):
         raise NotImplementedError('Please setup docker image here.')
@@ -42,3 +51,15 @@ class JarBase:
 
     def WORKDIR(self, path):
         self.dockerfile_lines.append(f'WORKDIR {path}')
+
+    @property
+    def dockerfile(self):
+        return '\n'.join(self.dockerfile_lines)
+    
+    @classmethod
+    def save(cls):
+        with open(os.path.join(cls.path, 'Dockerfile'), 'w') as f:
+            f.write(self.dockerfile)
+
+        pickle.dump(cls, os.path.join(cls.path, 'jar.pkl'))
+
