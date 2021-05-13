@@ -4,7 +4,7 @@ from typing import *
 
 __all__ = ["JarBase"]
 
-IDENT = 4
+INDENT = 4
 
 
 def get_main(src):
@@ -24,7 +24,6 @@ class JarBase:
         self.path = os.path.join(root, f"{container_name}")
         os.makedirs(self.path, exist_ok=True)
         self.COPY("main.py", f"/{container_name}/")
-        self.COPY("jar.pkl", f"/{container_name}/")
         self.CMD(f"python3 /{container_name}/main.py")
 
     def setup_image(self, **kwargs):
@@ -75,7 +74,7 @@ class JarBase:
             f.write(self.dockerfile)
         lines = inspect.getsource(self.entrypoint).split("\n")
         source = ["def main():"]
-        for ln in lines:
+        for ln in lines[1:]:
             source.append(ln[INDENT:])
         source = "\n".join(source)
         with open(os.path.join(self.path, "main.py"), "w") as f:
