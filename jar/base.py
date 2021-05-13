@@ -23,8 +23,9 @@ class JarBase:
         self.setup_image(**kwargs)
         container_name = self.__class__.__name__
         self.path = os.path.join(root, f"{container_name}")
-        os.makedir(self.path)
-        self.COPY(self.path, f"~/{container_name}/")
+        os.makedirs(self.path, exist_ok=True)
+        self.COPY(os.path.join(self.path, "main.py"), f"~/{container_name}/")
+        self.COPY(os.path.join(self.path, "jar.pkl"), f"~/{container_name}/")
         self.CMD(f"python3 ~/{container_name}/main.py")
 
     def setup_image(self, **kwargs):
@@ -70,10 +71,9 @@ class JarBase:
     def dockerfile(self):
         return "\n".join(self.dockerfile_lines)
 
-    @classmethod
-    def save(cls):
-        with open(os.path.join(cls.path, "Dockerfile"), "w") as f:
+    def save(self):
+        with open(os.path.join(self.path, "Dockerfile"), "w") as f:
             f.write(self.dockerfile)
-        pickle.dump(cls, os.path.join(cls.path, "jar.pkl"))
-        with open(os.path.join(cls.path, "main.py"), "w") as f:
-            f, write(get_main())
+        pickle.dump(self, open(os.path.join(self.path, "jar.pkl"), "wb"))
+        with open(os.path.join(self.path, "main.py"), "w") as f:
+            f.write(get_main())
