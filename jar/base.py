@@ -24,9 +24,9 @@ class JarBase:
         container_name = self.__class__.__name__
         self.path = os.path.join(root, f"{container_name}")
         os.makedirs(self.path, exist_ok=True)
-        self.COPY(os.path.join(self.path, "main.py"), f"~/{container_name}/")
-        self.COPY(os.path.join(self.path, "jar.pkl"), f"~/{container_name}/")
-        self.CMD(f"python3 ~/{container_name}/main.py")
+        self.COPY("main.py", f"/{container_name}/")
+        self.COPY("jar.pkl", f"/{container_name}/")
+        self.CMD(f"python3 /{container_name}/main.py")
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
