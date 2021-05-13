@@ -10,7 +10,7 @@ def get_main():
     ln.append("import os")
     ln.append("import pickle")
     ln.append("")
-    ln.append("jar = pickle.load('jar.pkl')")
+    ln.append("jar = pickle.load(open('jar.pkl', 'rb'))")
     ln.append("if __name__ == '__main__':")
     ln.append("\tjar()")
     return "\n".join(ln)
