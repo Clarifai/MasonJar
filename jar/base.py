@@ -1,18 +1,17 @@
 import os
-import pickle
+import inspect
 from typing import *
 
 __all__ = ["JarBase"]
 
+IDENT = 4
 
-def get_main():
+
+def get_main(src):
     ln = []
-    ln.append("import os")
-    ln.append("import pickle")
-    ln.append("")
-    ln.append("jar = pickle.load(open('jar.pkl', 'rb'))")
+    ln.append(src)
     ln.append("if __name__ == '__main__':")
-    ln.append("\tjar()")
+    ln.append(" " * INDENT + "main()")
     return "\n".join(ln)
 
 
@@ -74,6 +73,10 @@ class JarBase:
     def save(self):
         with open(os.path.join(self.path, "Dockerfile"), "w") as f:
             f.write(self.dockerfile)
-        pickle.dump(self, open(os.path.join(self.path, "jar.pkl"), "wb"))
+        lines = inspect.getsource(self.entrypoint).split("\n")
+        source = ["def main():"]
+        for ln in lines:
+            source.append(ln[INDENT:])
+        source = "\n".join(source)
         with open(os.path.join(self.path, "main.py"), "w") as f:
-            f.write(get_main())
+            f.write(get_main(source))
