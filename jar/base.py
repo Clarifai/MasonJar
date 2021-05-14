@@ -32,7 +32,7 @@ class JarBase:
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
 
-    def entrypoint():
+    def entrypoint(self):
         raise NotImplementedError("Entry point ops should be implemented here.")
 
     def __call__(self):
