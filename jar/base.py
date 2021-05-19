@@ -1,6 +1,5 @@
 import os
 import inspect
-import abc
 
 __all__ = ["JarBase"]
 
