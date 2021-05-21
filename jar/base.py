@@ -6,11 +6,18 @@ __all__ = ["JarBase"]
 INDENT = 4
 
 
-def get_main(src):
+def get_main(src, argspec):
     ln = []
     ln.append(src)
     ln.append("if __name__ == '__main__':")
-    ln.append(" " * INDENT + "main()")
+    ln.append(" " * INDENT + "import argparse")
+    ln.append(" " * INDENT + "parser = argparse.ArgumentParser()")
+    for arg, typ in argspec.annotations.items():
+        if arg == "self":
+            continue
+        ln.append(" " * INDENT + f"parser.add_argument('--{arg}', type={typ.__name__})")
+    ln.append(" " * INDENT + "kwargs = vars(parser.parse_args())")
+    ln.append(" " * INDENT + "main(**kwargs)")
     return "\n".join(ln)
 
 
@@ -26,16 +33,18 @@ class JarBase:
         self.container_name = self.__class__.__name__
         self.path = os.path.join(root, f"{self.container_name}")
         self.COPY("main.py", f"/{self.container_name}/")
-        self.CMD(f"{self.python} /{self.container_name}/main.py")
+        # self.dockerfile_lines.append(f"""ENTRYPOINT ["sh", "-c", "{self.python} /{self.container_name}/main.py"]""")
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
 
-    def entrypoint(self):
+    def entrypoint(self, **kwargs):
         raise NotImplementedError("Entry point ops should be implemented here.")
 
-    def __call__(self):
-        self.entrypoint()
+    def __call__(self, *args, **kwargs):
+        if len(args) > 0:
+            raise ValueError("Only kwargs are allowed.")
+        self.entrypoint(**kwargs)
 
     def ENV(self, *args):
         for arg in args:
@@ -73,12 +82,19 @@ class JarBase:
         with open(os.path.join(self.path, "Dockerfile"), "w") as f:
             f.write(self.dockerfile)
         lines = inspect.getsource(self.entrypoint).split("\n")
-        source = ["def main():"]
+        argspec = inspect.getfullargspec(self.entrypoint)
+        for arg in argspec.args:
+            if arg == "self":
+                continue
+            assert (
+                arg in argspec.annotations
+            ), f"Arg {arg} is not annotated. All args should we annotated kwargs."
+        source = [f"def main({', '.join(argspec.args[1:])}):"]  # do not include `self`
         for ln in lines[1:]:
             source.append(ln[INDENT:])
         source = "\n".join(source)
         with open(os.path.join(self.path, "main.py"), "w") as f:
-            f.write(get_main(source))
+            f.write(get_main(source, argspec))
 
     def build(self):
         try:
@@ -94,7 +110,9 @@ class JarBase:
 
         return image, logs
 
-    def run(self):
+    def run(self, *args, **kwargs):
+        if len(args) > 0:
+            raise ValueError("Only kwargs are allowed.")
         try:
             import docker
         except ImportError as e:
@@ -102,4 +120,7 @@ class JarBase:
             raise e
 
         cli = docker.client.from_env()
-        print(cli.containers.run(self.container_name.lower()).decode())
+        arg_string = " ".join((f"--{name} {value}" for name, value in kwargs.items()))
+        cmd = f"{self.python} /{self.container_name}/main.py " + arg_string
+
+        print(cli.containers.run(self.container_name.lower(), command=cmd).decode())
