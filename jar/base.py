@@ -1,6 +1,6 @@
 import os
 import inspect
-from typing import *
+from typing import Optional
 from .client import get_docker_client, login, push
 
 __all__ = ["JarBase"]
