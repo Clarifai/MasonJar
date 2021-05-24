@@ -22,7 +22,7 @@ def get_main(src, argspec):
 
 
 class JarBase:
-    """Jar Base Class"""
+    """Jar Base Class."""
 
     base_image: str
 
@@ -33,7 +33,6 @@ class JarBase:
         self.container_name = self.__class__.__name__
         self.path = os.path.join(root, f"{self.container_name}")
         self.COPY("main.py", f"/{self.container_name}/")
-        # self.dockerfile_lines.append(f"""ENTRYPOINT ["sh", "-c", "{self.python} /{self.container_name}/main.py"]""")
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
