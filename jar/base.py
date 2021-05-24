@@ -21,6 +21,16 @@ def get_main(src, argspec):
     return "\n".join(ln)
 
 
+def get_docker_client():
+
+    try:
+        import docker
+    except ImportError:
+        raise ImportError("Please install docker python client: `pip install docker`")
+
+    return docker.client.from_env()
+
+
 class JarBase:
     """Jar Base Class."""
 
@@ -96,29 +106,19 @@ class JarBase:
             f.write(get_main(source, argspec))
 
     def build(self):
-        try:
-            import docker
-        except ImportError as e:
-            print("Please install docker python client.")
-            raise e
-
-        cli = docker.client.from_env()
         image, logs = cli.images.build(
             path=self.path, tag=self.container_name.lower(), quiet=False
         )
+
+        get_docker_client()
 
         return image, logs
 
     def run(self, *args, **kwargs):
         if len(args) > 0:
             raise ValueError("Only kwargs are allowed.")
-        try:
-            import docker
-        except ImportError as e:
-            print("Please install docker python client.")
-            raise e
 
-        cli = docker.client.from_env()
+        cli = get_docker_client()
         arg_string = " ".join((f"--{name} {value}" for name, value in kwargs.items()))
         cmd = f"{self.python} /{self.container_name}/main.py " + arg_string
 
