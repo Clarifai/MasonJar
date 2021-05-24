@@ -1,6 +1,6 @@
-# pickle-your-container
+# Pickle Your Container
 
-Encapsulate a dockerfile using a python class which also plays the role of executable main function inside the container.
+Save your experiment dependencies and main function in one place as a python class.
 
 ```bash
 jar
