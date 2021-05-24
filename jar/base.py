@@ -1,5 +1,7 @@
 import os
 import inspect
+from typing import Optional
+from .client import get_docker_client, login, push
 
 __all__ = ["JarBase"]
 
@@ -22,7 +24,7 @@ def get_main(src, argspec):
 
 
 class JarBase:
-    """Jar Base Class"""
+    """Jar Base Class."""
 
     base_image: str
 
@@ -30,10 +32,10 @@ class JarBase:
         self.python = "python3" if py3 else "python"
         self.dockerfile_lines = [f"FROM {self.base_image}"]
         self.setup_image(**kwargs)
-        self.container_name = self.__class__.__name__
+        self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
         self.COPY("main.py", f"/{self.container_name}/")
-        # self.dockerfile_lines.append(f"""ENTRYPOINT ["sh", "-c", "{self.python} /{self.container_name}/main.py"]""")
+        self.registry = None
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
@@ -97,15 +99,10 @@ class JarBase:
             f.write(get_main(source, argspec))
 
     def build(self):
-        try:
-            import docker
-        except ImportError as e:
-            print("Please install docker python client.")
-            raise e
+        cli = get_docker_client()
 
-        cli = docker.client.from_env()
         image, logs = cli.images.build(
-            path=self.path, tag=self.container_name.lower(), quiet=False
+            path=self.path, tag=self.container_name, quiet=False
         )
 
         return image, logs
@@ -113,14 +110,36 @@ class JarBase:
     def run(self, *args, **kwargs):
         if len(args) > 0:
             raise ValueError("Only kwargs are allowed.")
-        try:
-            import docker
-        except ImportError as e:
-            print("Please install docker python client.")
-            raise e
 
-        cli = docker.client.from_env()
+        cli = get_docker_client()
         arg_string = " ".join((f"--{name} {value}" for name, value in kwargs.items()))
         cmd = f"{self.python} /{self.container_name}/main.py " + arg_string
 
-        print(cli.containers.run(self.container_name.lower(), command=cmd).decode())
+        print(cli.containers.run(self.container_name, command=cmd).decode())
+
+    def login(
+        self, username: str, registry: str, password: Optional[str] = None, **kwargs
+    ):
+
+        info = login(username, registry, password, **kwargs)
+        self.registry = registry
+
+        return info
+
+    def push(self, verbose=True):
+
+        if self.registry is None:
+            raise ValueError("Registry should not be empty. Please login first.")
+
+        cli = get_docker_client()
+        image = cli.images.get(self.container_name)
+        registry_tag = f"{self.registry}:{self.container_name}"
+        image.tag(registry_tag, tag=self.container_name)
+
+        info = push(registry_tag, verbose)
+
+        return info
+
+    @staticmethod
+    def docker_client():
+        return get_docker_client()
