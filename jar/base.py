@@ -1,5 +1,6 @@
 import os
 import inspect
+from .client import get_docker_client
 
 __all__ = ["JarBase"]
 
@@ -19,16 +20,6 @@ def get_main(src, argspec):
     ln.append(" " * INDENT + "kwargs = vars(parser.parse_args())")
     ln.append(" " * INDENT + "main(**kwargs)")
     return "\n".join(ln)
-
-
-def get_docker_client():
-
-    try:
-        import docker
-    except ImportError:
-        raise ImportError("Please install docker python client: `pip install docker`")
-
-    return docker.client.from_env()
 
 
 class JarBase:
