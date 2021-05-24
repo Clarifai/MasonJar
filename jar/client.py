@@ -1,6 +1,5 @@
 import getpass
 from typing import Optional
-import logging
 
 
 def get_docker_client():
@@ -31,7 +30,7 @@ def push(tag, verbose: bool = True):
     logs = []
     for l in cli.images.push(tag, stream=True, decode=True):
         if verbose:
-            logging.info(l)
+            print(l)
         logs.append(l)
 
     return logs
