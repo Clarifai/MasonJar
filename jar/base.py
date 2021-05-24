@@ -106,6 +106,8 @@ class JarBase:
             f.write(get_main(source, argspec))
 
     def build(self):
+        cli = get_docker_client()
+
         image, logs = cli.images.build(
             path=self.path, tag=self.container_name.lower(), quiet=False
         )
