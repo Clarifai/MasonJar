@@ -123,3 +123,7 @@ class JarBase:
         cmd = f"{self.python} /{self.container_name}/main.py " + arg_string
 
         print(cli.containers.run(self.container_name.lower(), command=cmd).decode())
+
+    @staticmethod
+    def docker_client():
+        return get_docker_client()
