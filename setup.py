@@ -5,8 +5,8 @@ with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name="pickle-your-container",
-    version="0.0.1",
+    name="mason-jar",
+    version="0.1.0",
     description="Pickle your container as a python class.",
     packages=find_packages(exclude=["tests"]),
     long_description=long_description,
