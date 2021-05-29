@@ -19,6 +19,7 @@ def get_main(src, argspec):
             continue
         if typ in (list, tuple):
             nargs = "+"
+            typ = typ.__args__[0]
         else:
             nargs = "1"
         ln.append(

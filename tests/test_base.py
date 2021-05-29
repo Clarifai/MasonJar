@@ -1,7 +1,7 @@
-import jar
+import mason
 
 
-class HelloWorld(jar.JarBase):
+class HelloWorld(mason.Jar):
 
     base_image = "python:3.7"
 
@@ -17,4 +17,4 @@ class HelloWorld(jar.JarBase):
 
 def test_base():
 
-    helloworld = HelloWorld()
+    HelloWorld()

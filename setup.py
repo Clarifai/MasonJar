@@ -4,9 +4,16 @@ from setuptools import find_packages, setup
 with open("README.md", "r") as f:
     long_description = f.read()
 
+
+def version():
+    import mason
+
+    return mason.__version__
+
+
 setup(
     name="mason-jar",
-    version="0.1.0",
+    version=version(),
     description="Pickle your container as a python class.",
     packages=find_packages(exclude=["tests"]),
     long_description=long_description,
