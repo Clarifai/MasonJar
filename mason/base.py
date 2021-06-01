@@ -34,6 +34,7 @@ def get_main(src, argspec):
 class Jar:
     """Jar Base Class."""
 
+    REPR_INDENT = 2
     base_image: str
 
     def __init__(self, root: str = ".", py3: bool = True, **kwargs):
@@ -151,3 +152,27 @@ class Jar:
     @staticmethod
     def docker_client():
         return get_docker_client()
+
+    def __repr__(self):
+        lines = []
+        lines.append(self.__class__.__name__)
+        for k, v in self.__dict__.items():
+            if k.startswith("_"):
+                continue
+            if isinstance(v, (list, tuple, set)):
+                lns = []
+                for x in v:
+                    ln = " " * 2 * self.REPR_INDENT + f"{x}"
+                    lns.append(ln)
+                lines.append([" " * self.REPR_INDENT + f"{k}:", "\n".join(lns)])
+            elif isinstance(v, dict):
+                lns = []
+                for _k, _v in v.items():
+                    ln = " " * 2 * self.REPR_INDENT + f"{_k}: {_v}"
+                    lns.append(ln)
+                lines.append([" " * self.RERP_INDENT + f"{k}:", "\n".join(lns)])
+            else:
+                ln = " " * self.REPR_INDENT + f"{k}: {v}"
+                lines.append(ln)
+
+        return "\n".join(lines)
