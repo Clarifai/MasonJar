@@ -1,4 +1,4 @@
-# Pickle Your Container
+# Mason Jar
 
 Save your experiment dependencies and main function in one place as a python class.
 
