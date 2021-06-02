@@ -36,6 +36,7 @@ class Jar:
 
     REPR_INDENT = 2
     base_image: str
+    registry: str = ""
 
     def __init__(self, root: str = ".", py3: bool = True, **kwargs):
         self.python = "python3" if py3 else "python"
@@ -44,7 +45,6 @@ class Jar:
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
         self.COPY("main.py", f"/{self.container_name}/")
-        self.registry = None
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
