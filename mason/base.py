@@ -161,14 +161,14 @@ class Jar:
                 continue
             if isinstance(v, (list, tuple, set)):
                 lns = []
-                lns.append(" " * self.RERP_INDENT + f"{k}:")
+                lns.append(" " * self.REPR_INDENT + f"{k}:")
                 for x in v:
                     ln = " " * 2 * self.REPR_INDENT + f"{x}"
                     lns.append(ln)
                 lines.append("\n".join(lns))
             elif isinstance(v, dict):
                 lns = []
-                lns.append(" " * self.RERP_INDENT + f"{k}:")
+                lns.append(" " * self.REPR_INDENT + f"{k}:")
                 for _k, _v in v.items():
                     ln = " " * 2 * self.REPR_INDENT + f"{_k}: {_v}"
                     lns.append(ln)

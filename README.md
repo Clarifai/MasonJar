@@ -3,7 +3,7 @@
 Save your experiment dependencies and main function in one place as a python class.
 
 ```bash
-jar
+mason
 ├── __init__.py
 ├── base.py
 └── client.py
@@ -14,9 +14,9 @@ jar
 ### Step 1: Define your container as a python class
 
 ```python
-import jar
+import mason
 
-class HelloWorld(jar.JarBase):
+class HelloWorld(mason.Jar):
     
     base_image = 'python:3.7'
     
@@ -76,7 +76,7 @@ hello.run(arg1=123, arg2='abc')
 
 ```python
 # login to registry with your credentials
-hello.login('username', 'registry', 'password')
+hello.login('username', 'registry')
 # push
 info = hello.push()
 ```
