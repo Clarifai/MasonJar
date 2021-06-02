@@ -37,6 +37,7 @@ class Jar:
     REPR_INDENT = 2
     base_image: str
     registry: str = ""
+    _helper_registry = []
 
     def __init__(self, root: str = ".", py3: bool = True, **kwargs):
         self.python = "python3" if py3 else "python"
@@ -45,6 +46,7 @@ class Jar:
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
         self.COPY("main.py", f"/{self.container_name}/")
+        self._helper_registry.append("entrypoint")
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
@@ -135,7 +137,7 @@ class Jar:
 
         return info
 
-    def push(self, verbose=True):
+    def push(self, verbose: bool = True):
 
         if self.registry is None:
             raise ValueError("Registry should not be empty. Please login first.")
