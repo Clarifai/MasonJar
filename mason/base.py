@@ -69,10 +69,8 @@ class Jar:
     def dockerfile(self):
         return "\n".join(self.dockerfile_lines)
 
-    def save(self):
-        os.makedirs(self.path, exist_ok=False)
-        with open(os.path.join(self.path, "Dockerfile"), "w") as f:
-            f.write(self.dockerfile)
+    @property
+    def main_file_source(self):
         sources = []
         for eager_name, graph_name in self._helper_registry.items():
             sources.append(
@@ -81,9 +79,15 @@ class Jar:
 
         source = "\n".join(sources)
         argspec = inspect.getfullargspec(self.entrypoint)
+        return trace.get_main_source_file(source, argspec)
+
+    def save(self):
+        os.makedirs(self.path, exist_ok=False)
+        with open(os.path.join(self.path, "Dockerfile"), "w") as f:
+            f.write(self.dockerfile)
 
         with open(os.path.join(self.path, "main.py"), "w") as f:
-            f.write(get_main(source, argspec))
+            f.write(self.main_file_source)
 
     def build(self):
         cli = get_docker_client()
