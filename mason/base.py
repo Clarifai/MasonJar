@@ -1,6 +1,6 @@
 import os
 import inspect
-from typing import Optional
+from typing import *
 from .client import get_docker_client, login, push
 from .trace import get_main, INDENT
 
@@ -13,15 +13,16 @@ class Jar:
     REPR_INDENT = 2
     base_image: str
     registry: str = ""
-    _helper_registry = []
+    _helper_registry: List[str]
 
-    def __init__(self, root: str = ".", py3: bool = True, **kwargs):
+    def __init__(self, root: str = ".", py3: bool = True, **kwargs: Any):
         self.python = "python3" if py3 else "python"
         self.dockerfile_lines = [f"FROM {self.base_image}"]
         self.setup_image(**kwargs)
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
         self.COPY("main.py", f"/{self.container_name}/")
+        self._helper_registry = []
         self._helper_registry.append("entrypoint")
 
     def setup_image(self, **kwargs):

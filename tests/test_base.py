@@ -10,9 +10,6 @@ class HelloWorld(mason.Jar):
 
     def entrypoint(self):
         print("hello world")
-        import numpy as np
-
-        print(f"numpy version {np.__version__}")
 
 
 def test_base():
