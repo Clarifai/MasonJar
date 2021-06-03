@@ -12,6 +12,7 @@ def test_indent_detent():
     assert trace._dedent(line) == " " * trace.INDENT + "abc"
 
 
+# do not change the format of the following functions!
 def example_method(a):
     return a ** 2
 
@@ -22,6 +23,9 @@ def example_static_method(a):
 
 def example_class_method(a):
     return a ** 2
+
+
+# do not change the format of the above functions!
 
 
 def test_get_function_source():
