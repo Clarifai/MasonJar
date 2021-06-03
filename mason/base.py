@@ -85,6 +85,11 @@ class Jar:
     @property
     def main_file_source(self):
         sources = []
+        constants = []
+        for name, value in self._constant_registry.items():
+            constants.append(f"{name} = {value}")
+        sources.append("\n".join(constants))
+
         for eager_name, graph_name in self._helper_registry.items():
             sources.append(
                 trace.get_function_source(getattr(self, graph_name), eager_name)
