@@ -89,6 +89,7 @@ class Jar:
         for name, value in self._constant_registry.items():
             constants.append(f"{name} = {value}")
         sources.append("\n".join(constants))
+        sources.append("")
 
         for eager_name, graph_name in self._helper_registry.items():
             sources.append(
