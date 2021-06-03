@@ -25,10 +25,15 @@ class Jar:
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
         self.COPY("main.py", f"/entrypoint/")
-        self._helper_registry = {}
-        self._helper_registry["entrypoint"] = "entrypoint"
         self._constant_registry = {}
         self.constants()
+        self._helper_registry = {}
+        self._helper_registry["entrypoint"] = "entrypoint"
+        self._record_methods()
+
+    def _record_methods(self):
+        for attr in dir(self.__class__):
+            _ = getattr(self, attr)
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
@@ -41,7 +46,7 @@ class Jar:
 
     def __setattr__(self, key: str, value: Any):
         """Record constants after instance created."""
-        if hasattr(self, "_constant_registry"):
+        if hasattr(self, "_constant_registry") and not key.startswith("_"):
             self._constant_registry[key] = value
 
         object.__setattr__(self, key, value)
@@ -100,8 +105,8 @@ class Jar:
         argspec = inspect.getfullargspec(self.entrypoint)
         return trace.get_main_source_file(source, argspec).replace("self.", "")
 
-    def save(self):
-        os.makedirs(self.path, exist_ok=False)
+    def save(self, overwrite=True):
+        os.makedirs(self.path, exist_ok=overwrite)
         with open(os.path.join(self.path, "Dockerfile"), "w") as f:
             f.write(self.dockerfile)
 

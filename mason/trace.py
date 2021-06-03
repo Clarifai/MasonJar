@@ -24,14 +24,16 @@ class _IncludeDecorator:
 
     def __get__(self, instance, owner) -> Callable:
         self.instance = instance
-        return self.__call__
-
-    def __call__(self, *args, **kwargs) -> Any:
         key = self.method.__name__
         if key not in self.instance._helper_registry:
             val = f"_original_{key}"
             self.instance._helper_registry[key] = val
             setattr(self.instance, val, self.method)
+
+        return self.__call__
+
+    def __call__(self, *args, **kwargs) -> Any:
+
         return self.method(self.instance, *args, **kwargs)
 
 
