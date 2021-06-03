@@ -63,8 +63,19 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     return "\n".join(ln)
 
 
-def get_function_source(method: Callable, skip_lines: int = 0) -> str:
-    lines = inspect.getsource(method).split("\n")[skip_lines:]
+def get_function_source(method: Callable, name: Optional[str] = None) -> str:
+
+    if name is None:
+        name = method.__name__
+
+    lines = inspect.getsource(method).split("\n")
+    skip_lines = 0
+    for ln in lines:
+        if ln.lstrip().startswith("def"):
+            break
+        else:
+            skip_lines += 1
+    lines = lines[skip_lines:]
 
     # get global indent spaces
     global_indent = len(lines[0].split("def ")[0])
@@ -86,7 +97,7 @@ def get_function_source(method: Callable, skip_lines: int = 0) -> str:
             arg in argspec.annotations
         ), f"Arg {arg} is not annotated. All args should be annotated kwargs."
     source = [
-        f"def {method.__name__}({', '.join(argspec.args[first_non_self_arg:])}):"
+        f"def {name}({', '.join(argspec.args[first_non_self_arg:])}):"
     ]  # do not include `self` or `cls` if present
     for ln in lines:
         source.append(ln)
