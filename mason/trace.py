@@ -51,6 +51,7 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
         assert (
             arg in argspec.annotations
         ), f"Arg {arg} is not annotated. All entrypoint args should be annotated kwargs."
+
     for arg, typ in argspec.annotations.items():
         if arg in ("self", "cls"):
             continue
