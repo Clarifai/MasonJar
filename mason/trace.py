@@ -1,7 +1,7 @@
 import inspect
 from typing import *
 
-__all__ = ["INDENT", "include", "get_main_source_file", "method_to_function_source"]
+__all__ = ["INDENT", "include", "get_main_source_file", "get_function_source"]
 
 INDENT = 4
 

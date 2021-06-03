@@ -12,7 +12,22 @@ def test_indent_detent():
     assert trace._dedent(line) == " " * trace.INDENT + "abc"
 
 
-def test_method_to_function_source():
+def example_method(a):
+    return a ** 2
+
+
+def example_static_method(a):
+    return a ** 2
+
+
+def example_class_method(a):
+    return a ** 2
+
+
+def test_get_function_source():
+
+    import inspect
+
     class Example:
         def example_method(self, a: int):
             return a ** 2
@@ -25,22 +40,12 @@ def test_method_to_function_source():
         def example_class_method(cls, a: int):
             return a ** 2
 
-    def example_method(a: int):
-        return a ** 2
-
-    def example_static_method(a: int):
-        return a ** 2
-
-    def example_class_method(a: int):
-        return a ** 2
-
     ex = Example()
 
-    ex_method = trace.method_to_function_source(ex.example_method)
-    ex_static_method = trace.method_to_function_source(ex.example_static_method, 1)
-    trace.method_to_function_source(ex.example_class_method, 1)
+    ex_method = trace.get_function_source(ex.example_method)
+    ex_static_method = trace.get_function_source(ex.example_static_method, 1)
+    ex_class_method = trace.get_function_source(ex.example_class_method, 1)
 
-    assert ex.example_method(10) == example_method(10), ex_method
-    assert Example.example_static_method(100) == example_static_method(
-        100
-    ), ex_static_method
+    assert ex_method == inspect.getsource(example_method)
+    assert ex_static_method == inspect.getsource(example_static_method)
+    assert ex_class_method == inspect.getsource(example_class_method)
