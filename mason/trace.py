@@ -1,3 +1,4 @@
+import inspect
 from typing import *
 
 INDENT = 4
@@ -34,7 +35,7 @@ class _IncludeDecorator:
         return self.method(self.instance, *args, **kwargs)
 
 
-def get_main(src: str, argspec: NamedTuple):
+def get_main_source(src: str, argspec: NamedTuple):
     ln = []
     ln.append(src)
     ln.append("if __name__ == '__main__':")
@@ -49,13 +50,29 @@ def get_main(src: str, argspec: NamedTuple):
         else:
             nargs = "1"
         ln.append(
-            " " * INDENT
-            + f"parser.add_argument('--{arg}', type={typ.__name__}, nargs={nargs})"
+            _indent(
+                f"parser.add_argument('--{arg}', type={typ.__name__}, nargs={nargs})"
+            )
         )
-    ln.append(" " * INDENT + "kwargs = vars(parser.parse_args())")
-    ln.append(" " * INDENT + "main(**kwargs)")
+    ln.append(_indent("kwargs = vars(parser.parse_args())"))
+    ln.append(_indent("main(**kwargs)"))
     return "\n".join(ln)
 
 
-def method_to_function(method: Callable):
-    pass
+def method_to_function(method: Callable) -> Callable:
+    lines = inspect.getsource(method).split("\n")
+    argspec = inspect.getfullargspec(method)
+    first_non_self_arg = 0
+    for arg in argspec.args:
+        if arg == "self":
+            first_non_self_arg += 1
+            continue
+        assert (
+            arg in argspec.annotations
+        ), f"Arg {arg} is not annotated. All args should be annotated kwargs."
+    source = [
+        f"def {method.__name__}({', '.join(argspec.args[first_non_self_arg:])}):"
+    ]  # do not include `self`
+    for ln in lines[1:]:
+        source.append(_dedent(ln))
+    source = "\n".join(source)

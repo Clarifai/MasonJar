@@ -2,7 +2,7 @@ import os
 import inspect
 from typing import *
 from .client import get_docker_client, login, push
-from .trace import get_main, INDENT
+from .trace import *
 
 __all__ = ["Jar"]
 
