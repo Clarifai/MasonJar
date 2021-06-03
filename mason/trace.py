@@ -5,8 +5,6 @@ __all__ = ["INDENT", "include", "get_main_source_file", "method_to_function_sour
 
 INDENT = 4
 
-include = _IncludeDecorator  # alias for Include class
-
 
 def _indent(line: str, num_tabs: int = 1) -> str:
     return " " * INDENT * num_tabs + line
@@ -37,6 +35,9 @@ class _IncludeDecorator:
         return self.method(self.instance, *args, **kwargs)
 
 
+include = _IncludeDecorator  # alias for Include class
+
+
 def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     ln = []
     ln.append(src)
@@ -62,21 +63,32 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     return "\n".join(ln)
 
 
-def method_to_function_source(method: Callable) -> str:
-    lines = inspect.getsource(method).split("\n")
+def method_to_function_source(method: Callable, skip_lines: int = 0) -> str:
+    lines = inspect.getsource(method).split("\n")[skip_lines:]
+
+    # get global indent spaces
+    global_indent = len(lines[0].split("def ")[0])
+    assert (
+        global_indent % INDENT == 0
+    ), f"Method source indent ({global_indent}) is not in units of {INDENT} where the first line is {lines[0]}"
+    global_indent = global_indent // INDENT
+
+    # remove global indent spaces
+    lines = (_dedent(ln, global_indent) for ln in lines[1:])
     argspec = inspect.getfullargspec(method)
     first_non_self_arg = 0
     for arg in argspec.args:
-        if arg == "self":
+        if arg in ["self", "cls"]:
             first_non_self_arg += 1
             continue
+
         assert (
             arg in argspec.annotations
         ), f"Arg {arg} is not annotated. All args should be annotated kwargs."
     source = [
         f"def {method.__name__}({', '.join(argspec.args[first_non_self_arg:])}):"
-    ]  # do not include `self`
-    for ln in lines[1:]:
-        source.append(_dedent(ln))
+    ]  # do not include `self` or `cls` if present
+    for ln in lines:
+        source.append(ln)
 
     return "\n".join(source)
