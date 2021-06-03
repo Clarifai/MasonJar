@@ -13,9 +13,10 @@ class Jar:
     REPR_INDENT = 2
     base_image: str
     registry: str = ""
-    _helper_registry: Dict[
-        str, str
-    ]  # eager reference name `method_name` -> graph `_original_method_name`
+    # eager reference name `method_name` -> graph `_original_method_name`
+    _helper_registry: Dict[str, str]
+    # constants to be included in the main file
+    _constant_registry: Dict[str, Any]
 
     def __init__(self, root: str = ".", py3: bool = True, **kwargs: Any):
         self.python = "python3" if py3 else "python"

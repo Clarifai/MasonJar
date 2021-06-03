@@ -14,4 +14,6 @@ class HelloWorld(mason.Jar):
 
 def test_base():
 
-    HelloWorld()
+    hello = HelloWorld()
+    print(hello.dockerfile)
+    print(hello.main_file_source)
