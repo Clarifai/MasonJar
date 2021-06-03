@@ -44,6 +44,13 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     ln.append("if __name__ == '__main__':")
     ln.append(_indent("import argparse"))
     ln.append(_indent("parser = argparse.ArgumentParser()"))
+
+    for arg in argspec.args:
+        if arg in ["self", "cls"]:
+            continue
+        assert (
+            arg in argspec.annotations
+        ), f"Arg {arg} is not annotated. All entrypoint args should be annotated kwargs."
     for arg, typ in argspec.annotations.items():
         if arg in ("self", "cls"):
             continue
@@ -91,11 +98,7 @@ def get_function_source(method: Callable, name: Optional[str] = None) -> str:
     for arg in argspec.args:
         if arg in ["self", "cls"]:
             first_non_self_arg += 1
-            continue
-
-        assert (
-            arg in argspec.annotations
-        ), f"Arg {arg} is not annotated. All args should be annotated kwargs."
+            break
     source = [
         f"def {name}({', '.join(argspec.args[first_non_self_arg:])}):"
     ]  # do not include `self` or `cls` if present
