@@ -1,6 +1,8 @@
 import inspect
 from typing import *
 
+__all__ = ["INDENT", "include", "get_main_source_file", "method_to_function_source"]
+
 INDENT = 4
 
 include = _IncludeDecorator  # alias for Include class
@@ -35,7 +37,7 @@ class _IncludeDecorator:
         return self.method(self.instance, *args, **kwargs)
 
 
-def get_main_source(src: str, argspec: NamedTuple) -> str:
+def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     ln = []
     ln.append(src)
     ln.append("if __name__ == '__main__':")
@@ -55,12 +57,12 @@ def get_main_source(src: str, argspec: NamedTuple) -> str:
             )
         )
     ln.append(_indent("kwargs = vars(parser.parse_args())"))
-    ln.append(_indent("main(**kwargs)"))
+    ln.append(_indent("entrypoint(**kwargs)"))
 
     return "\n".join(ln)
 
 
-def method_to_function(method: Callable) -> str:
+def method_to_function_source(method: Callable) -> str:
     lines = inspect.getsource(method).split("\n")
     argspec = inspect.getfullargspec(method)
     first_non_self_arg = 0
