@@ -12,24 +12,35 @@ def test_indent_detent():
     assert trace._dedent(line) == " " * trace.INDENT + "abc"
 
 
-class Example:
-    def example_method(self, a: int):
-        return a ** 2
-
-    @staticmethod
-    def examples_static_method(a: int):
-        return a ** 2
-
-
 def test_method_to_function_source():
+    class Example:
+        def example_method(self, a: int):
+            return a ** 2
+
+        @staticmethod
+        def example_static_method(a: int):
+            return a ** 2
+
+        @classmethod
+        def example_class_method(cls, a: int):
+            return a ** 2
+
+    def example_method(a: int):
+        return a ** 2
+
+    def example_static_method(a: int):
+        return a ** 2
+
+    def example_class_method(a: int):
+        return a ** 2
 
     ex = Example()
 
     ex_method = trace.method_to_function_source(ex.example_method)
-    ex_static_method = trace.method_to_function_source(ex.examples_static_method, 1)
+    ex_static_method = trace.method_to_function_source(ex.example_static_method, 1)
+    trace.method_to_function_source(ex.example_class_method, 1)
 
-    exec(ex_method)
-    exec(ex_static_method)
-
-    assert ex.example_method(10) == example_method(10)
-    assert Example.examples_static_method(100) == examples_static_method(100)
+    assert ex.example_method(10) == example_method(10), ex_method
+    assert Example.example_static_method(100) == example_static_method(
+        100
+    ), ex_static_method
