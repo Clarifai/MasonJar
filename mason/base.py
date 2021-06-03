@@ -13,7 +13,9 @@ class Jar:
     REPR_INDENT = 2
     base_image: str
     registry: str = ""
-    _helper_registry: List[str]
+    _helper_registry: Dict[
+        str, str
+    ]  # eager reference name `method_name` -> graph `_original_method_name`
 
     def __init__(self, root: str = ".", py3: bool = True, **kwargs: Any):
         self.python = "python3" if py3 else "python"
@@ -22,8 +24,8 @@ class Jar:
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
         self.COPY("main.py", f"/entrypoint/")
-        self._helper_registry = []
-        self._helper_registry.append("entrypoint")
+        self._helper_registry = {}
+        self._helper_registry["entrypoint"] = "entrypoint"
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
