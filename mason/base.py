@@ -2,7 +2,7 @@ import os
 import inspect
 from typing import *
 from .client import get_docker_client, login, push
-from .trace import *
+from . import trace
 
 __all__ = ["Jar"]
 
@@ -73,18 +73,15 @@ class Jar:
         os.makedirs(self.path, exist_ok=False)
         with open(os.path.join(self.path, "Dockerfile"), "w") as f:
             f.write(self.dockerfile)
-        lines = inspect.getsource(self.entrypoint).split("\n")
+        sources = []
+        for eager_name, graph_name in self._helper_registry.items():
+            sources.append(
+                trace.get_function_source(getattr(self, graph_name), eager_name)
+            )
+
+        source = "\n".join(sources)
         argspec = inspect.getfullargspec(self.entrypoint)
-        for arg in argspec.args:
-            if arg == "self":
-                continue
-            assert (
-                arg in argspec.annotations
-            ), f"Arg {arg} is not annotated. All args should we annotated kwargs."
-        source = [f"def main({', '.join(argspec.args[1:])}):"]  # do not include `self`
-        for ln in lines[1:]:
-            source.append(ln[INDENT:])
-        source = "\n".join(source)
+
         with open(os.path.join(self.path, "main.py"), "w") as f:
             f.write(get_main(source, argspec))
 
@@ -103,7 +100,7 @@ class Jar:
 
         cli = get_docker_client()
         arg_string = " ".join((f"--{name} {value}" for name, value in kwargs.items()))
-        cmd = f"{self.python} /{self.container_name}/main.py " + arg_string
+        cmd = f"{self.python} /entrypoint/main.py " + arg_string
 
         print(cli.containers.run(self.container_name, command=cmd).decode())
 
