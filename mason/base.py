@@ -27,12 +27,24 @@ class Jar:
         self.COPY("main.py", f"/entrypoint/")
         self._helper_registry = {}
         self._helper_registry["entrypoint"] = "entrypoint"
+        self._constant_registry = {}
+        self.constants()
 
     def setup_image(self, **kwargs):
         raise NotImplementedError("Please setup docker image here.")
 
     def entrypoint(self, **kwargs):
         raise NotImplementedError("Entry point ops should be implemented here.")
+
+    def constants(self):
+        """Define constants here."""
+
+    def __setattr__(self, key: str, value: Any):
+        """Record constants after instance created."""
+        if hasattr(self, _constant_registry):
+            self._constant_registry[key] = value
+
+        object.__setattr__(self, key, value)
 
     def __call__(self, *args, **kwargs):
         if len(args) > 0:
@@ -80,7 +92,7 @@ class Jar:
 
         source = "\n".join(sources)
         argspec = inspect.getfullargspec(self.entrypoint)
-        return trace.get_main_source_file(source, argspec)
+        return trace.get_main_source_file(source, argspec).replace("self.", "")
 
     def save(self):
         os.makedirs(self.path, exist_ok=False)
