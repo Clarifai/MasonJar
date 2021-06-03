@@ -21,7 +21,7 @@ class Jar:
         self.setup_image(**kwargs)
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
-        self.COPY("main.py", f"/{self.container_name}/")
+        self.COPY("main.py", f"/entrypoint/")
         self._helper_registry = []
         self._helper_registry.append("entrypoint")
 
