@@ -57,15 +57,20 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     for arg, typ in argspec.annotations.items():
         if arg in ("self", "cls"):
             continue
-        if typ in (list, tuple):
-            nargs = "+"
-            typ = typ.__args__[0]
+        if hasattr(typ, "__origin__"):
+            if typ.__origin__ in (list, tuple):
+                nargs = "'+'"
+                typ = typ.__args__[0]
+            else:
+                raise TypeError(
+                    f"Only List and Tuple supported but get {arg} as {typ}."
+                )
         else:
-            nargs = "1"
+            nargs = None
+
+        type_name = typ.__name__ if hasattr(typ, "__name__") else None
         ln.append(
-            _indent(
-                f"parser.add_argument('--{arg}', type={typ.__name__}, nargs={nargs})"
-            )
+            _indent(f"parser.add_argument('--{arg}', type={type_name}, nargs={nargs})")
         )
     ln.append(_indent("kwargs = vars(parser.parse_args())"))
     ln.append(_indent("entrypoint(**kwargs)"))

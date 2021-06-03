@@ -32,7 +32,15 @@ class Jar:
         self._record_methods()
 
     def _record_methods(self):
-        for attr in dir(self.__class__):
+        _exclude = {
+            "_helper_registry",
+            "_constant_registry",
+            "dockerfile",
+            "main_file_source",
+        }
+        for attr in dir(self.__class__) or attr.startswith("__"):
+            if attr in _exclude:
+                continue
             _ = getattr(self, attr)
 
     def setup_image(self, **kwargs):
@@ -126,8 +134,17 @@ class Jar:
         if len(args) > 0:
             raise ValueError("Only kwargs are allowed.")
 
+        def _parse_list(x):
+            if isinstance(x, (list, tuple)):
+                return " ".join(str(i) for i in x)
+            else:
+                return x
+
         cli = get_docker_client()
-        arg_string = " ".join((f"--{name} {value}" for name, value in kwargs.items()))
+        arg_string = " ".join(
+            (f"--{name} {_parse_list(value)}" for name, value in kwargs.items())
+        )
+        print(f">> input args >> {arg_string}\n")
         cmd = f"{self.python} /entrypoint/main.py " + arg_string
 
         print(cli.containers.run(self.container_name, command=cmd).decode())
