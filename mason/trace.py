@@ -45,7 +45,7 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     ln.append(_indent("import argparse"))
     ln.append(_indent("parser = argparse.ArgumentParser()"))
     for arg, typ in argspec.annotations.items():
-        if arg == "self":
+        if arg in ("self", "cls"):
             continue
         if typ in (list, tuple):
             nargs = "+"
