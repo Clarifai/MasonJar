@@ -41,7 +41,7 @@ class Jar:
 
     def __setattr__(self, key: str, value: Any):
         """Record constants after instance created."""
-        if hasattr(self, _constant_registry):
+        if hasattr(self, "_constant_registry"):
             self._constant_registry[key] = value
 
         object.__setattr__(self, key, value)
