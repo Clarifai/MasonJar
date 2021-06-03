@@ -22,11 +22,11 @@ class _IncludeDecorator:
     def __init__(self, method):
         self.method = method
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance, owner) -> Callable:
         self.instance = instance
         return self.__call__
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Any:
         key = self.method.__name__
         if key not in self.instance._helper_registry:
             val = f"_original_{key}"
@@ -35,7 +35,7 @@ class _IncludeDecorator:
         return self.method(self.instance, *args, **kwargs)
 
 
-def get_main_source(src: str, argspec: NamedTuple):
+def get_main_source(src: str, argspec: NamedTuple) -> str:
     ln = []
     ln.append(src)
     ln.append("if __name__ == '__main__':")
@@ -56,10 +56,11 @@ def get_main_source(src: str, argspec: NamedTuple):
         )
     ln.append(_indent("kwargs = vars(parser.parse_args())"))
     ln.append(_indent("main(**kwargs)"))
+
     return "\n".join(ln)
 
 
-def method_to_function(method: Callable) -> Callable:
+def method_to_function(method: Callable) -> str:
     lines = inspect.getsource(method).split("\n")
     argspec = inspect.getfullargspec(method)
     first_non_self_arg = 0
@@ -75,4 +76,5 @@ def method_to_function(method: Callable) -> Callable:
     ]  # do not include `self`
     for ln in lines[1:]:
         source.append(_dedent(ln))
-    source = "\n".join(source)
+
+    return "\n".join(source)
