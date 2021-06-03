@@ -63,7 +63,7 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     return "\n".join(ln)
 
 
-def method_to_function_source(method: Callable, skip_lines: int = 0) -> str:
+def get_function_source(method: Callable, skip_lines: int = 0) -> str:
     lines = inspect.getsource(method).split("\n")[skip_lines:]
 
     # get global indent spaces
