@@ -2,6 +2,8 @@ from typing import *
 
 INDENT = 4
 
+include = _IncludeDecorator  # alias for Include class
+
 
 def _indent(line: str, num_tabs: int = 1) -> str:
     return " " * INDENT * num_tabs + line
@@ -11,8 +13,8 @@ def _dedent(line: str, num_tabs: int = 1) -> str:
     return line[num_tabs * INDENT :]
 
 
-class Include:
-    """Include: the decorator class that annotate Jar methods as included functions in the main function.
+class _IncludeDecorator:
+    """_IncludeDecorator: the decorator class that annotate Jar methods as included functions in the main function.
     In Jar.entrypoint the method can still be called by original name. But the original unwrapped method is preseved as method `_original_<method_name>`.
     """
 
