@@ -147,8 +147,8 @@ The helper will be added to the main file as follows
 
 ```python
 def a_helper_func(a):
-		print("hello world", a)
-  	return a ** 2
+    print("hello world", a)
+    return a ** 2
 ```
 
 ### Container entrypoint
