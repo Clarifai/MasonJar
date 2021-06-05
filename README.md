@@ -1,6 +1,12 @@
 # Mason Jar
 
-Save your experiment dependencies and main function in one place as a python class.
+* Save your experiment dependencies and main function in one place as a python class
+* Mirror docker layers with python inheritance
+* With `mason.Jar` instances, you can 
+  * test your code in eager mode
+  * build image
+  * test locally in container
+  * login and push image
 
 ```bash
 mason
@@ -107,3 +113,46 @@ class HelloChild(HelloWorld):
         print(np.cos(np.pi))
 ```
 
+### Attach constants
+
+```python
+class HelloConstants(HelloWorld):
+    def constants(self):
+        self.a = 0
+        self.b = "1"
+        self.c = 2.0
+        self.d = [0, 1, 2, 3]
+```
+
+The constants will be added to the main file as follows
+
+```python
+a = 0
+b = "1"
+c = 2.0
+d = [0, 1, 2, 3]
+```
+
+### Attach helper functions
+
+```python
+class HelloHelpers(HelloWorld):
+    @mason.include
+    def a_helper_func(self, a):
+        print("hello world", a)
+        return a ** 2
+```
+
+The helper will be added to the main file as follows
+
+```python
+def a_helper_func(a):
+  	print("hello world", a)
+    return a ** 2
+```
+
+### Container entrypoint
+
+```bash
+docker run -it your.registry:helloworld python3 /entrypoint/main.py --arg1 1 --arg2 2 ...
+```
