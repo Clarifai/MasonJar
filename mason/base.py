@@ -10,7 +10,52 @@ _DEFAULT_REGISTRY = "registry.hub.docker.com"
 
 
 class Jar:
-    """Jar Base Class."""
+    """
+    Jar Base Class.
+
+    Usage:
+
+    Step 1: Declare `base_image`
+
+    ```
+        class MyImage(Jar):
+            base_image = 'ubuntu:latest'
+            ...
+    ```
+    Step 2: Define `setup_image`
+
+    ```
+    class MyImage(Jar):
+
+        base_image = 'ubuntu:latest'
+
+        def setup_image(self):
+            pass
+    ```
+
+    Step 3: Define `entrypoint`
+    ```
+    class MyImage(Jar):
+
+        base_image = 'ubuntu:latest'
+
+        def setup_image(self):
+            pass
+
+        def entrypoint(self, x: int):
+            print(x ** 2)
+    ```
+
+    Use `constants` to attach optional constants which will be exported in main file
+
+    Use `@include` to attach optional helper methods which will be exported in main file as functions
+
+    Params:
+
+    __init__(root, py3, **kwargs)
+        `root`, str: root directory, default '.'
+        `py3`, bool: is python3, default True
+    """
 
     REPR_INDENT = 2
     base_image: str
