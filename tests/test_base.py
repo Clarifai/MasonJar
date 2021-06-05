@@ -26,16 +26,6 @@ class HelloHelpers(HelloWorld):
     def a_helper_func(self, a):
         print("hello world", a)
 
-    @classmethod
-    @mason.include
-    def class_helper(cls, b):
-        print("hello world", b)
-
-    @staticmethod
-    @mason.include
-    def static_helper(c):
-        print("hello world", c)
-
 
 def test_jar_files():
 
@@ -86,5 +76,3 @@ def test_helpers():
     hello = HelloHelpers()
 
     assert "a_helper_func" in hello._helper_registry
-    assert "static_helper" in hello._helper_registry
-    assert "class_helper" in hello._helper_registry

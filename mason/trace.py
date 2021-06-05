@@ -24,6 +24,10 @@ class _IncludeDecorator:
 
     def __get__(self, instance, owner) -> Callable:
         self.instance = instance
+        if not hasattr(self.method, "__name__"):
+            raise AttributeError(
+                "The `include` decorator can only be applied to regular methods."
+            )
         key = self.method.__name__
         if key not in self.instance._helper_registry:
             val = f"_original_{key}"
