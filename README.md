@@ -5,13 +5,18 @@ Save your experiment dependencies and main function in one place as a python cla
 ```bash
 mason
 ├── __init__.py
-├── base.py
-└── client.py
+├── base.py                                                                                                       
+├── client.py                                                                                                     
+└── trace.py 
 ```
+
+## Install
+
+`pip install mason-jar`
 
 ## Example:
 
-### Step 1: Define your container as a python class
+### Define your container as a python class
 
 ```python
 import mason
@@ -34,7 +39,7 @@ class HelloWorld(mason.Jar):
         print(f'arg2 {arg2}')
 ```
 
-### Step 2: Instantiate and export
+### Instantiate and export
 
 ```python
 hello = HelloWorld()
@@ -72,7 +77,7 @@ hello.run(arg1=123, arg2='abc')
 # arg2 abc
 ```
 
-## Step 3: Push to registry
+## Push to registry
 
 ```python
 # login to registry with your credentials
@@ -81,7 +86,7 @@ hello.login('username', 'registry')
 info = hello.push()
 ```
 
-## Step 4: Expand the experiment
+## Expand the experiment
 
 ```python
 class HelloChild(HelloWorld):
