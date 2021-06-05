@@ -39,6 +39,8 @@ class Jar:
             "_constant_registry",
             "dockerfile",
             "main_file_source",
+            "entrypoint",
+            "setup_image",
         }
         for attr in dir(self.__class__) or attr.startswith("__"):
             if attr in _exclude:
