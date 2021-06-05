@@ -50,6 +50,16 @@ class Jar:
 
     Use `@include` to attach optional helper methods which will be exported in main file as functions
 
+    Use `save` to save Dockerfile and main file to a folder in root directory
+
+    Use `build` to build image
+
+    Use `run` to run the mainfile in docker image
+
+    Use `login` to login your registry
+
+    Use `push` to push your image to registry
+
     Params:
 
     __init__(root, py3, **kwargs)
