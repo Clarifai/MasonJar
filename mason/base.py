@@ -6,13 +6,15 @@ from . import trace
 
 __all__ = ["Jar"]
 
+_DEFAULT_REGISTRY = "registry.hub.docker.com"
+
 
 class Jar:
     """Jar Base Class."""
 
     REPR_INDENT = 2
     base_image: str
-    registry: str = ""
+    registry: Optional[str] = None
     # eager reference name `method_name` -> graph `_original_method_name`
     _helper_registry: Dict[str, str]
     # constants to be included in the main file
@@ -150,7 +152,11 @@ class Jar:
         print(cli.containers.run(self.container_name, command=cmd).decode())
 
     def login(
-        self, username: str, registry: str, password: Optional[str] = None, **kwargs
+        self,
+        username: str,
+        registry: str = _DEFAULT_REGISTRY,
+        password: Optional[str] = None,
+        **kwargs,
     ):
 
         info = login(username, registry, password, **kwargs)
