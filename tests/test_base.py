@@ -27,6 +27,17 @@ class HelloHelpers(HelloWorld):
         print("hello world", a)
 
 
+class HelloFrontmatter(HelloWorld):
+    def entrypoint(self):
+        import os  # frontmatter
+
+        print("hello world")
+
+    @mason.include
+    def helper(self, a):
+        import sys  # frontmatter
+
+
 def test_jar_files():
 
     hello = HelloWorld()
@@ -76,3 +87,11 @@ def test_helpers():
     hello = HelloHelpers()
 
     assert "a_helper_func" in hello._helper_registry
+
+
+def test_frontmatter():
+
+    hello = HelloFrontmatter()
+
+    assert "import os" in hello.mainfile.split("\n")[:2]
+    assert "import sys" in hello.mainfile.split("\n")[:2]
