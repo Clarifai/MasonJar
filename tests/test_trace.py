@@ -28,7 +28,7 @@ def example_class_method(a):
 # do not change the format of the above functions!
 
 
-def test_get_function_source():
+def test_inner_source():
 
     import inspect
 
@@ -53,3 +53,33 @@ def test_get_function_source():
     assert ex_method == inspect.getsource(example_method)
     assert ex_static_method == inspect.getsource(example_static_method)
     assert ex_class_method == inspect.getsource(example_class_method)
+
+
+def test_outter_source():
+    class Example:
+        def example_method(self, a: int):
+            import math  # frontmatter
+
+            return a ** 2
+
+        @staticmethod
+        def example_static_method(a: int):
+            import math  # frontmatter
+
+            return a ** 2
+
+        @classmethod
+        def example_class_method(cls, a: int):
+            import math  # frontmatter
+
+            return a ** 2
+
+    ex = Example()
+
+    ex_method = trace.get_function_source(ex.example_method)[1]
+    ex_static_method = trace.get_function_source(ex.example_static_method)[1]
+    ex_class_method = trace.get_function_source(ex.example_class_method)[1]
+
+    assert ex_method == "import math"
+    assert ex_static_method == "import math"
+    assert ex_class_method == "import math"
