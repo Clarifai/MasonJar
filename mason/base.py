@@ -97,8 +97,8 @@ class Jar:
             "entrypoint",
             "setup_image",
         }
-        for attr in dir(self.__class__) or attr.startswith("__"):
-            if attr in _exclude:
+        for attr in dir(self.__class__):
+            if attr in _exclude or attr.startswith("__"):
                 continue
             _ = getattr(self, attr)
 
@@ -159,6 +159,8 @@ class Jar:
         sources = []
         constants = []
         for name, value in self._constant_registry.items():
+            if isinstance(value, str):
+                value = f"'{value}'"
             constants.append(f"{name} = {value}")
         sources.append("\n".join(constants))
         sources.append("")
