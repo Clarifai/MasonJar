@@ -46,9 +46,9 @@ def test_get_function_source():
 
     ex = Example()
 
-    ex_method = trace.get_function_source(ex.example_method)
-    ex_static_method = trace.get_function_source(ex.example_static_method)
-    ex_class_method = trace.get_function_source(ex.example_class_method)
+    ex_method = trace.get_function_source(ex.example_method)[0]
+    ex_static_method = trace.get_function_source(ex.example_static_method)[0]
+    ex_class_method = trace.get_function_source(ex.example_class_method)[0]
 
     assert ex_method == inspect.getsource(example_method)
     assert ex_static_method == inspect.getsource(example_static_method)

@@ -84,7 +84,11 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     return "\n".join(ln)
 
 
-def get_function_source(method: Callable, name: Optional[str] = None) -> Tuple[str]:
+def get_function_source(
+    method: Callable, name: Optional[str] = None
+) -> Tuple[str, str]:
+    """method or function -> inner source, outter source (to be moved to
+    frontmatter of `main.py`)"""
 
     if name is None:
         name = method.__name__
