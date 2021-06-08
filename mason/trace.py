@@ -136,6 +136,5 @@ def get_function_source(
             inner.append(ln)
 
     inner.append("\n")
-    outter.append("\n")
 
     return "\n".join(inner), "\n".join(outter)
