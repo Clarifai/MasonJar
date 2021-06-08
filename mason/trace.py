@@ -5,6 +5,8 @@ __all__ = ["INDENT", "include", "get_main_source_file", "get_function_source"]
 
 INDENT = 4
 
+_fm = "# frontmatter"
+
 
 def _indent(line: str, num_tabs: int = 1) -> str:
     return " " * INDENT * num_tabs + line
@@ -82,7 +84,7 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     return "\n".join(ln)
 
 
-def get_function_source(method: Callable, name: Optional[str] = None) -> str:
+def get_function_source(method: Callable, name: Optional[str] = None) -> Tuple[str]:
 
     if name is None:
         name = method.__name__
@@ -111,10 +113,14 @@ def get_function_source(method: Callable, name: Optional[str] = None) -> str:
         if arg in ["self", "cls"]:
             first_non_self_arg += 1
             break
-    source = [
+    inner = [
         f"def {name}({', '.join(argspec.args[first_non_self_arg:])}):"
     ]  # do not include `self` or `cls` if present
+    outter = []
     for ln in lines:
-        source.append(ln)
+        if ln.endswith(_fm):
+            outter.append(_fm[: -len(_fm)])
+        else:
+            inner.append(ln)
 
-    return "\n".join(source)
+    return "\n".join(inner), "\n".join(outter)
