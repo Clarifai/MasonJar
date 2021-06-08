@@ -135,4 +135,7 @@ def get_function_source(
         else:
             inner.append(ln)
 
+    inner.append("\n")
+    outter.append("\n")
+
     return "\n".join(inner), "\n".join(outter)
