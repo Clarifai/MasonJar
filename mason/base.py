@@ -108,8 +108,8 @@ class Jar:
     def entrypoint(self, **kwargs):
         raise NotImplementedError("Entry point ops should be implemented here.")
 
-    def global_imports(self):
-        """Define global imports here."""
+    def constants(self):
+        """Define constants here."""
 
     def __setattr__(self, key: str, value: Any):
         """Record constants after instance created."""
