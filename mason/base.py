@@ -163,8 +163,6 @@ class Jar:
             if isinstance(value, str):
                 value = f"'{value}'"
             constants.append(f"{name} = {value}")
-        sources.append("\n".join(constants))
-        sources.append("")
 
         for eager_name, graph_name in self._helper_registry.items():
             source, frontmatter = trace.get_function_source(
@@ -177,9 +175,9 @@ class Jar:
 
         mainsource = [
             "\n".join(frontmatters),
-            "\n\n",
+            "\n\n" if len(frontmatters) > 0 else "",
             "\n".join(constants),
-            "\n\n",
+            "\n\n" if len(constants) > 0 else "",
             "\n".join(sources),
         ]
         argspec = inspect.getfullargspec(self.entrypoint)
