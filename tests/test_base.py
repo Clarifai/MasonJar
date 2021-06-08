@@ -35,7 +35,7 @@ def test_jar_files():
     dockerfile = hello.dockerfile
     assert "FROM python:3.7" in dockerfile
     assert "RUN python3 -m pip install numpy" in dockerfile
-    mainfile = hello.main_file_source
+    mainfile = hello.mainfile
     assert 'print("hello world")' in mainfile
 
 
