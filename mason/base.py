@@ -93,7 +93,7 @@ class Jar:
             "_helper_registry",
             "_constant_registry",
             "dockerfile",
-            "main_file_source",
+            "mainfile",
             "entrypoint",
             "setup_image",
         }
@@ -155,9 +155,10 @@ class Jar:
         return "\n".join(self.dockerfile_lines)
 
     @property
-    def main_file_source(self):
+    def mainfile(self):
         sources = []
         constants = []
+        frontmatters = []
         for name, value in self._constant_registry.items():
             if isinstance(value, str):
                 value = f"'{value}'"
@@ -166,13 +167,23 @@ class Jar:
         sources.append("")
 
         for eager_name, graph_name in self._helper_registry.items():
-            sources.append(
-                trace.get_function_source(getattr(self, graph_name), eager_name)
+            source, frontmatter = trace.get_function_source(
+                getattr(self, graph_name), eager_name
             )
+            if len(source) > 0:
+                sources.append(source)
+            if len(frontmatter) > 0:
+                frontmatters.append(frontmatter)
 
-        source = "\n".join(sources)
+        mainsource = [
+            "\n".join(frontmatters),
+            "\n\n",
+            "\n".join(constants),
+            "\n\n",
+            "\n".join(sources),
+        ]
         argspec = inspect.getfullargspec(self.entrypoint)
-        return trace.get_main_source_file(source, argspec).replace("self.", "")
+        return trace.get_main_source_file(mainsource, argspec).replace("self.", "")
 
     def save(self, overwrite=True):
         os.makedirs(self.path, exist_ok=overwrite)
@@ -180,7 +191,7 @@ class Jar:
             f.write(self.dockerfile)
 
         with open(os.path.join(self.path, "main.py"), "w") as f:
-            f.write(self.main_file_source)
+            f.write(self.mainfile)
 
     def build(self):
         cli = get_docker_client()
