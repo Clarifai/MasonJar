@@ -122,6 +122,8 @@ def get_function_source(
     ]  # do not include `self` or `cls` if present
     outter = []
     for ln in lines:
+        if ln == "":
+            continue
         ln = ln.rstrip()
         if ln.endswith(_fm):
             outter.append(ln[: -len(_fm)].strip())
