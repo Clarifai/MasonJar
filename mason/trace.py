@@ -49,7 +49,12 @@ include = _IncludeDecorator  # alias for Include class
 def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     ln = []
     ln.append(src)
+    ln.append("\n")
     ln.append("if __name__ == '__main__':")
+    if len(argspec.args) == 0:
+        ln.append(_indent("entrypoint()"))
+        return "\n".join(ln)
+
     ln.append(_indent("import argparse"))
     ln.append(_indent("parser = argparse.ArgumentParser()"))
 
@@ -122,7 +127,7 @@ def get_function_source(
     ]  # do not include `self` or `cls` if present
     outter = []
     for ln in lines:
-        if ln == "":
+        if ln.strip() == "":
             continue
         ln = ln.rstrip()
         if ln.endswith(_fm):
