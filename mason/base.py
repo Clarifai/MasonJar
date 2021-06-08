@@ -183,7 +183,9 @@ class Jar:
             "\n".join(sources),
         ]
         argspec = inspect.getfullargspec(self.entrypoint)
-        return trace.get_main_source_file(mainsource, argspec).replace("self.", "")
+        return trace.get_main_source_file("\n".join(mainsource), argspec).replace(
+            "self.", ""
+        )
 
     def save(self, overwrite=True):
         os.makedirs(self.path, exist_ok=overwrite)
