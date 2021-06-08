@@ -51,7 +51,7 @@ def get_main_source_file(src: str, argspec: NamedTuple) -> str:
     ln.append(src)
     ln.append("\n")
     ln.append("if __name__ == '__main__':")
-    if len(argspec.args) == 0:
+    if len(argspec.args) < 2:  # e.g. entrypoint(self)
         ln.append(_indent("entrypoint()"))
         return "\n".join(ln)
 
