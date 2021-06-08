@@ -175,9 +175,9 @@ class Jar:
 
         mainsource = [
             "\n".join(frontmatters),
-            "\n\n" if len(frontmatters) > 0 else "",
+            "\n" if len(frontmatters) > 0 else "",
             "\n".join(constants),
-            "\n\n" if len(constants) > 0 else "",
+            "\n" if len(constants) > 0 else "",
             "\n".join(sources),
         ]
         argspec = inspect.getfullargspec(self.entrypoint)
