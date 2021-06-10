@@ -1,5 +1,7 @@
 # Mason Jar
 
+[![test](https://github.com/chenchao-clarifai/mason-jar/actions/workflows/unittest.yaml/badge.svg?branch=master)](https://github.com/chenchao-clarifai/mason-jar/actions/workflows/unittest.yaml)
+
 * Save your experiment dependencies and main function in one place as a python class
 * Mirror docker layers with python inheritance
 * With `mason.Jar` instances, you can 
