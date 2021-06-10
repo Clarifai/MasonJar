@@ -1,5 +1,5 @@
 import inspect
-from typing import *
+from typing import *  # noqa ignore=F405
 
 __all__ = ["INDENT", "include", "get_main_source_file", "get_function_source"]
 

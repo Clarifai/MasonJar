@@ -1,6 +1,6 @@
 import os
 import inspect
-from typing import *
+from typing import *  # noqa ignore=F405
 from .client import get_docker_client, login, push
 from . import trace
 
