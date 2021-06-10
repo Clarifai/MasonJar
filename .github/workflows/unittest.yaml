@@ -13,6 +13,9 @@ jobs:
       - uses: psf/black@stable
         with:
           args: ". --check"
+      - name: flake8 action
+        uses: suo/flake8-github-action@v1
+
   unittest:
     runs-on: ubuntu-latest
     steps:

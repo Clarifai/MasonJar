@@ -12,7 +12,7 @@ repos:
   - repo: https://github.com/pycqa/flake8
     rev: 3.9.2
     hooks:
-    -   id: flake8
+      - id: flake8
   - repo: git@github.com:myint/docformatter.git
     rev: v1.4
     hooks:
