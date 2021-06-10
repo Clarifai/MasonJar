@@ -1,0 +1,26 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - uses: psf/black@stable
+        with:
+          args: ". --check"
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: install pytest
+        run: python3 -m pip install pytest
+      - name: run tests
+        run: python3 -m pytest tests
