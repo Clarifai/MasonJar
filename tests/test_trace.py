@@ -50,9 +50,13 @@ def test_inner_source():
     ex_static_method = trace.get_function_source(ex.example_static_method)[0]
     ex_class_method = trace.get_function_source(ex.example_class_method)[0]
 
-    assert ex_method == inspect.getsource(example_method)
-    assert ex_static_method == inspect.getsource(example_static_method)
-    assert ex_class_method == inspect.getsource(example_class_method)
+    assert ex_method.rstrip("\n") == inspect.getsource(example_method).rstrip("\n")
+    assert ex_static_method.rstrip("\n") == inspect.getsource(
+        example_static_method
+    ).rstrip("\n")
+    assert ex_class_method.rstrip("\n") == inspect.getsource(
+        example_class_method
+    ).rstrip("\n")
 
 
 def test_outter_source():
