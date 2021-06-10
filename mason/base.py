@@ -46,9 +46,11 @@ class Jar:
             print(x ** 2)
     ```
 
-    Use `constants` to attach optional constants which will be exported in main file
+    Use `constants` to attach optional constants which will be exported in main
+    file
 
-    Use `@include` to attach optional helper methods which will be exported in main file as functions
+    Use `@include` to attach optional helper methods which will be exported in
+    main file as functions
 
     Use `save` to save Dockerfile and main file to a folder in root directory
 
