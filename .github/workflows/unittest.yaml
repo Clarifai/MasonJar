@@ -21,6 +21,6 @@ jobs:
         with:
           python-version: '3.x'
       - name: install pytest
-        run: python3 -m pip install pytest
+        run: python3 -m pip install pytest docker
       - name: run tests
         run: python3 -m pytest tests
