@@ -1,6 +1,6 @@
 import os
 import inspect
-from typing import *  # noqa ignore=F405
+from typing import *
 from .client import get_docker_client, login, push
 from . import trace
 
@@ -81,7 +81,7 @@ class Jar:
         self.setup_image(**kwargs)
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
-        self.COPY("main.py", f"/entrypoint/")
+        self.COPY("main.py", "/entrypoint/")
         self._constant_registry = {}
         self.constants()
         self._helper_registry = {}

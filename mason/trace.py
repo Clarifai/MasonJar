@@ -1,5 +1,5 @@
 import inspect
-from typing import *  # noqa ignore=F405
+from typing import *
 
 __all__ = ["INDENT", "include", "get_main_source_file", "get_function_source"]
 
@@ -17,8 +17,13 @@ def _dedent(line: str, num_tabs: int = 1) -> str:
 
 
 class _IncludeDecorator:
-    """_IncludeDecorator: the decorator class that annotate Jar methods as included functions in the main function.
-    In Jar.entrypoint the method can still be called by original name. But the original unwrapped method is preseved as method `_original_<method_name>`.
+    """_IncludeDecorator:
+    the decorator class that annotate Jar methods as included
+    functions in the main function.
+
+    In Jar.entrypoint the method can still be called by original
+    name. But the original unwrapped method is preseved as method
+    `_original_<method_name>`.
     """
 
     def __init__(self, method):
@@ -108,9 +113,11 @@ def get_function_source(
 
     # get global indent spaces
     global_indent = len(lines[0].split("def ")[0])
-    assert (
-        global_indent % INDENT == 0
-    ), f"Method source indent ({global_indent}) is not in units of {INDENT} where the first line is {lines[0]}"
+    assert global_indent % INDENT == 0, (
+        f"Method source indent ({global_indent}) is not in units of {INDENT} "
+        f"where the first line is {lines[0]}"
+    )
+
     global_indent = global_indent // INDENT
 
     # remove global indent spaces
