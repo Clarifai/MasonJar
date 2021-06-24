@@ -1,8 +1,10 @@
-import os
 import inspect
+import os
 from typing import *
-from .client import get_docker_client, login, push
+
 from . import trace
+from .client import get_docker_client, login, push
+from .path import PathMirror
 
 __all__ = ["Jar"]
 
@@ -76,15 +78,19 @@ class Jar:
     _helper_registry: Dict[str, str]
     # constants to be included in the main file
     _constant_registry: Dict[str, Any]
+    # path registry: human readable name -> PathMirror(eager_path, graph_path)
+    _path_registry: Dict[str, PathMirror]
 
     def __init__(self, root: str = ".", py3: bool = True, **kwargs: Any):
         self.python = "python3" if py3 else "python"
-        self.dockerfile_lines = [f"FROM {self.base_image}"]
-        self.setup_image(**kwargs)
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
+        self._path_registry = {}
+        self.dockerfile_lines = [f"FROM {self.base_image}"]
+        self.setup_image(**kwargs)
         self.COPY("main.py", "/entrypoint/")
         self._constant_registry = {}
+
         self.constants()
         self._helper_registry = {}
         self._helper_registry["entrypoint"] = "entrypoint"
@@ -113,6 +119,31 @@ class Jar:
     def constants(self):
         """Define constants here."""
 
+    def add_path_mirror(self, path_name: str, eager_path: str, graph_path: str):
+        self._path_registry[path_name] = PathMirror(eager_path, graph_path)
+
+    def get_eager_path(self, path_name: str):
+        if path_name in self._path_registry:
+            return self._path_registry[path_name].eager_path
+        else:
+            raise ValueError(f"Path name {path_name} does not exist")
+
+    def get_graph_path(self, path_name: str):
+        if path_name in self._path_registry:
+            return self._path_registry[path_name].graph_path
+        else:
+            raise ValueError(f"Path name {path_name} does not exist")
+
+    @property
+    def path_dict(self):
+        return self._eager_path_dict()
+
+    def _eager_path_dict(self):
+        return {name: mirror.eager_path for name, mirror in self._path_registry.items()}
+
+    def _graph_path_dict(self):
+        return {name: mirror.graph_path for name, mirror in self._path_registry.items()}
+
     def __setattr__(self, key: str, value: Any):
         """Record constants after instance created."""
         if hasattr(self, "_constant_registry") and not key.startswith("_"):
@@ -133,11 +164,13 @@ class Jar:
         for arg in args:
             self.dockerfile_lines.append(f"RUN {arg}")
 
-    def COPY(self, out_dir, in_dir, flag=None):
+    def COPY(self, out_dir: str, in_dir: str, flag: Optional[str] = None):
         if flag:
             self.dockerfile_lines.append(f"COPY {flag} {out_dir} {in_dir}")
         else:
             self.dockerfile_lines.append(f"COPY {out_dir} {in_dir}")
+
+        self.add_path_mirror(path_name=in_dir, eager_path=out_dir, graph_path=in_dir)
 
     def CMD(self, *args):
         for arg in args:
@@ -151,6 +184,7 @@ class Jar:
 
     def WORKDIR(self, path):
         self.dockerfile_lines.append(f"WORKDIR {path}")
+        self.add_path_mirror(path_name="workdir", eager_path=self.path, graph_path=path)
 
     @property
     def dockerfile(self):
@@ -165,6 +199,9 @@ class Jar:
             if isinstance(value, str):
                 value = f"'{value}'"
             constants.append(f"{name} = {value}")
+
+        if self.path_dict:
+            constants.append(f"path_dict = {self._graph_path_dict()}")
 
         for eager_name, graph_name in self._helper_registry.items():
             source, frontmatter = trace.get_function_source(
