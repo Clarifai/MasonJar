@@ -200,8 +200,7 @@ class Jar:
                 value = f"'{value}'"
             constants.append(f"{name} = {value}")
 
-        if self.path_dict:
-            constants.append(f"path_dict = {self._graph_path_dict()}")
+        constants.append(f"path_dict = {self._graph_path_dict()}")
 
         for eager_name, graph_name in self._helper_registry.items():
             source, frontmatter = trace.get_function_source(
