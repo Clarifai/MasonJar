@@ -164,6 +164,9 @@ class Jar:
         for arg in args:
             self.dockerfile_lines.append(f"RUN {arg}")
 
+    def ADD(self, out_dir: str, in_dir: str):
+        self.dockerfile_lines.append(f"ADD {out_dir} {in_dir}")
+
     def COPY(self, out_dir: str, in_dir: str, flag: Optional[str] = None):
         if flag:
             self.dockerfile_lines.append(f"COPY {flag} {out_dir} {in_dir}")
