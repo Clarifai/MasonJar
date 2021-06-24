@@ -170,8 +170,6 @@ class Jar:
         else:
             self.dockerfile_lines.append(f"COPY {out_dir} {in_dir}")
 
-        self.add_path_mirror(path_name=in_dir, eager_path=out_dir, graph_path=in_dir)
-
     def CMD(self, *args):
         for arg in args:
             self.dockerfile_lines.append(f"CMD {arg}")
@@ -184,7 +182,6 @@ class Jar:
 
     def WORKDIR(self, path):
         self.dockerfile_lines.append(f"WORKDIR {path}")
-        self.add_path_mirror(path_name="workdir", eager_path=self.path, graph_path=path)
 
     @property
     def dockerfile(self):

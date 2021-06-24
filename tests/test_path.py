@@ -9,6 +9,8 @@ class HelloWorld(mason.Jar):
         self.RUN("python3 -m pip install numpy")
         self.COPY(out_dir="out_dir", in_dir="in_dir")
         self.WORKDIR("/home/mason/")
+        self.add_path_mirror("in_dir", eager_path="out_dir", graph_path="in_dir")
+        self.add_path_mirror("workdir", eager_path=self.path, graph_path="/home/mason/")
 
     def entrypoint(self):
         print("hello world")
