@@ -85,10 +85,12 @@ class Jar:
         self.python = "python3" if py3 else "python"
         self.container_name = self.__class__.__name__.lower()
         self.path = os.path.join(root, f"{self.container_name}")
+        self._path_registry = {}
         self.dockerfile_lines = [f"FROM {self.base_image}"]
         self.setup_image(**kwargs)
         self.COPY("main.py", "/entrypoint/")
         self._constant_registry = {}
+
         self.constants()
         self._helper_registry = {}
         self._helper_registry["entrypoint"] = "entrypoint"
@@ -134,9 +136,11 @@ class Jar:
 
     @property
     def path_dict(self):
+        return self._eager_path_dict()
+
+    def _eager_path_dict(self):
         return {name: mirror.eager_path for name, mirror in self._path_registry.items()}
 
-    @property
     def _graph_path_dict(self):
         return {name: mirror.graph_path for name, mirror in self._path_registry.items()}
 
@@ -197,7 +201,7 @@ class Jar:
             constants.append(f"{name} = {value}")
 
         if self.path_dict:
-            constants.append(f"{path_dict} = {self._graph_path_dict}")
+            constants.append(f"path_dict = {self._graph_path_dict()}")
 
         for eager_name, graph_name in self._helper_registry.items():
             source, frontmatter = trace.get_function_source(
